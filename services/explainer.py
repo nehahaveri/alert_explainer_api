@@ -17,9 +17,14 @@ def generate_explanation(alert: Alert) -> str:
         comparison = "reached"
 
     next_step = NEXT_STEPS[alert.severity]
-    return (
+    explanation = (
         f'This {alert.severity} alert from {alert.source} is titled "{alert.title}". '
         f"The {alert.metric_name} metric {comparison} its threshold: the current value is "
         f"{alert.metric_value}, compared with a threshold of {alert.threshold}. "
         f"Recommended next step: {next_step}"
     )
+    resolved_by = getattr(alert, "resolved_by", None) 
+    acknowledged_by = (
+        resolved_by.upper() if resolved_by is not None else "Not yet acknowledged"
+    )
+    return explanation + f" Acknowledged by: {acknowledged_by}."

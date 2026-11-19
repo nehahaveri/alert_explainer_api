@@ -9,6 +9,27 @@ NEXT_STEPS = {
 
 
 def generate_explanation(alert: Alert) -> str:
+    """Build a plain-language explanation of an alert.
+
+    Compares the alert's metric value with its threshold, then describes the
+    result as "exceeded", "fell below", or "reached". Adds the recommended next
+    step from ``NEXT_STEPS`` for the alert's severity. Finally, adds an
+    "Acknowledged by" note. The note uses the alert's optional ``resolved_by``
+    attribute in uppercase. If that attribute is missing or ``None``, the note
+    says "Not yet acknowledged".
+
+    Args:
+        alert: The alert to explain. Its ``severity``, ``source``, ``title``,
+            ``metric_name``, ``metric_value``, and ``threshold`` attributes
+            are read.
+
+    Returns:
+        The explanation as a single string.
+
+    Raises:
+        KeyError: If ``alert.severity`` is not "critical", "warning", or
+            "info".
+    """
     if alert.metric_value > alert.threshold:
         comparison = "exceeded"
     elif alert.metric_value < alert.threshold:
